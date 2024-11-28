@@ -1,23 +1,47 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import TodoApp from './TodoApp';
+import Login from './Login';
+import Register from './Register';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!localStorage.getItem('user');
+  });
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+  };
+
+  const handleRegister = () => {
+    setIsRegistering(false);  // Setelah registrasi berhasil, kembalikan ke login
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isLoggedIn ? (
+        <div>
+          <button onClick={handleLogout}>Logout</button>
+          <TodoApp />
+        </div>
+      ) : isRegistering ? (
+        <Register onRegister={handleRegister} toggleLogin={() => setIsRegistering(false)} />
+      ) : (
+        <Login onLogin={handleLogin} toggleRegister={() => setIsRegistering(true)} />
+      )}
+
+      {/* Tombol untuk toggle antara Register dan Login */}
+      {!isLoggedIn && (
+        <button onClick={() => setIsRegistering(!isRegistering)}>
+          {isRegistering ? 'Back to Login' : 'Register'}
+        </button>
+      )}
     </div>
   );
 }
